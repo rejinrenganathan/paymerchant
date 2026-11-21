@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PayMerchant</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5cad">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+:root{--bg:#f2f6fc;--card:#fff;--text:#14213d;--muted:#667085;--line:#e1e8f2;--brand:#0b4f9c;--brand-t:#fff;--ok:#16a34a;--err:#dc2626;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#181c30;--text:#eef0f8;--muted:#9aa1b8;--line:#2a2f4a;--brand:#5b82ff;--brand-t:#fff;--ok:#4ade80;--err:#f87171}}
+:root[data-theme="dark"]{--bg:#0f1220;--card:#181c30;--text:#eef0f8;--muted:#9aa1b8;--line:#2a2f4a;--brand:#5b82ff;--brand-t:#fff;--ok:#4ade80;--err:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:20px 16px}
+.wrap{width:100%;max-width:420px}
+.proto{position:sticky;top:0;z-index:20;background:#ffc20e;color:#14173a;font-size:11px;font-weight:700;text-align:center;padding:6px 8px;border-radius:8px;margin-bottom:12px}
+.hdr{background:#0b4f9c;color:#fff;border-bottom:4px solid #ffc20e;border-radius:14px;padding:14px 16px;margin:0 0 16px;display:flex;justify-content:space-between;align-items:center}
+.hdr b{font-size:16px}.hdr span{font-size:11px;background:#ffc20e;color:#0a2a4a;padding:3px 8px;border-radius:20px;font-weight:700}
+button#go{box-shadow:0 3px 0 #ffc20e}
+.hr{display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:2px}
+.hr small{font-size:11px;opacity:.85;margin-top:6px}.hr strong{font-size:17px}
+.hl{display:flex;flex-direction:column;gap:4px}.hl small{font-size:12px;opacity:.9;letter-spacing:.5px}
+.dots{display:flex;gap:14px;justify-content:center;margin:18px 0 26px}
+.dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--brand)}
+.dots i.on{background:var(--brand)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:300px;margin:0 auto}
+.key{margin:0;background:var(--card);color:var(--text);border:1px solid var(--line);font-size:22px;padding:16px 0;border-radius:14px}
+.key:active{background:var(--line)}
+.bal{background:#0b4f9c;color:#fff;border-radius:16px;padding:20px;margin-bottom:16px}
+.bal small{opacity:.85;font-size:12px}.bal .big{color:#fff;font-size:30px;margin:6px 0 0}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 12px;text-align:center;font-size:14px;font-weight:600}
+.tile i{display:block;font-style:normal;font-size:26px;margin-bottom:6px}
+.tile.act{border-color:#ffc20e;box-shadow:0 3px 0 #ffc20e;cursor:pointer}
+.pc{display:flex;gap:10px;justify-content:center;margin:20px 0}
+.pc input{width:50px;height:54px;padding:0;text-align:center;font-size:22px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.pcrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.bio{width:auto;margin:0;padding:14px 20px;border-radius:30px;background:linear-gradient(90deg,#0b4f9c,#2a7de1);font-size:14px}
+.forgot{color:#e0a800;font-weight:600;font-size:14px;cursor:pointer}
+.terms{margin-top:60px;font-size:12px;color:var(--muted)}
+.dtop{display:flex;align-items:center;justify-content:space-between;background:color-mix(in srgb,var(--brand) 22%,var(--bg));border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.dtop .lg{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--brand);font-size:18px}
+.dtop .pw{font-size:20px;color:var(--brand)}
+.who{font-size:12px;color:var(--muted);margin:0 2px 10px}
+.vb{background:#14173a;color:#fff;border-radius:40px;padding:14px 18px;text-align:center;cursor:pointer;margin-bottom:6px}
+.vb b{display:block;font-size:20px}.vb small{display:block;margin-top:6px;font-size:12px;color:#8fb8ff}
+.sec{font-size:15px;font-weight:800;margin:18px 2px 8px;display:flex;align-items:center;gap:8px}
+.nw{background:#ffc20e;color:#14173a;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.t{position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 4px;text-align:center;font-size:12px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.t i{font-style:normal;font-size:24px}
+.t.act{cursor:pointer;border-color:var(--brand)}
+.t .nw{position:absolute;top:4px;right:4px}
+.band{background:color-mix(in srgb,var(--brand) 18%,var(--bg));margin:14px -16px 0;padding:2px 16px 14px}
+.nav{position:fixed;left:0;right:0;bottom:0;max-width:420px;margin:0 auto;background:#14173a;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+.nav div{color:#fff;font-size:11px;text-align:center}.nav div i{display:block;font-style:normal;font-size:20px}.nav .on{color:#ffc20e}
+.acts{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0 4px}
+.ab{margin:0;padding:10px 4px;font-size:11px;line-height:1.25;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:600}
+.ab:active{background:var(--line)}
+.txl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 14px 8px;margin-top:8px}
+.tr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.tr small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.tr .cr{color:var(--ok);font-weight:700}.tr .db{color:var(--err);font-weight:700}
+.sbar{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:30px;padding:4px 16px;margin:12px 0 0}
+.sbar input{border:0;padding:10px 4px;flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:10px 0}
+.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
+.av{width:42px;height:42px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex:none}
+.tm{flex:1;min-width:0}.tm b{font-size:15px}
+.ta{text-align:right}.ta span{font-weight:600;font-size:15px}
+.ta .fa{color:var(--muted)}.ta .fl{display:block;color:var(--err);font-style:normal;font-size:12px;margin-top:2px}
+.tr .db{color:var(--text)}
+.demot{background:#ffc20e;color:#14173a;font-size:11px;font-weight:700;text-align:center;padding:6px;border-radius:8px;margin:8px 0 2px}
+.bk{width:auto;margin:0 0 12px;padding:6px 14px;background:var(--card);color:var(--brand);font-size:14px;font-weight:600;border:1px solid var(--line);border-radius:20px;cursor:pointer}
+.stick{width:96px;height:96px;margin:6px auto 14px;display:block}
+.stick circle{fill:none;stroke:var(--ok);stroke-width:5;stroke-dasharray:289;stroke-dashoffset:289;transform:rotate(-90deg);transform-origin:50% 50%;animation:draw .7s ease forwards}
+.stick path{fill:none;stroke:var(--ok);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw2 .4s ease .55s forwards}
+.wi{width:70px;height:70px;border-radius:50%;background:#f59e0b;color:#fff;font-size:42px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:6px auto 14px;animation:pop2 .4s ease}
+.okc{color:var(--ok);font-weight:700}
+.note{font-size:11px;color:var(--muted);margin-top:14px}
+.opt{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:12px;cursor:pointer;font-weight:700;font-size:16px}
+.opt i{font-style:normal;font-size:26px}.opt small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:2px}
+.opt:active{background:var(--line)}
+.pr{cursor:pointer}
+.mbr{border-top:1px solid var(--line);padding:10px 0}.mbr:first-child{border-top:0}
+.mba{display:flex;gap:8px;margin:2px 0 0 54px}
+.mbb{flex:1;width:auto;margin:0;padding:8px 4px;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text)}
+.mbb.dd{color:var(--err)}
+.acd{background:#14173a;color:#fff;border-radius:16px;padding:16px;margin-bottom:6px}
+.acd .h{font-size:12px;letter-spacing:1px;color:#ffc20e;font-weight:700;margin-bottom:6px}
+.acd .r{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.12);font-size:14px}
+.acd .r span{color:#9fb3d9}.acd .r b{text-align:right;font-weight:600}
+.acd .vb{background:#232850;border-radius:12px;margin:12px 0 0;padding:14px}
+.acd .lk{text-align:center;font-size:12px;color:#8fb8ff;margin-top:12px}
+.tg{display:flex;justify-content:flex-end;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.sw{width:46px;height:26px;margin:0;padding:0;border:0;border-radius:20px;background:var(--line);position:relative;cursor:pointer;transition:background .2s}
+.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw.on{background:var(--brand)}.sw.on i{transform:translateX(20px)}
+.ov{position:fixed;inset:0;background:rgba(10,14,30,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.ov.hidden{display:none}
+.ovc{background:var(--card);border-radius:16px;padding:26px 22px;width:100%;max-width:320px;text-align:center}
+.ovc small{display:block;color:var(--muted);font-size:13px;margin:6px 0 4px}
+.fx{width:70px;height:70px;border-radius:50%;background:var(--err);color:#fff;font-size:38px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;animation:pop2 .4s ease}
+@keyframes pop2{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+h1{font-size:20px;margin:8px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+label:first-of-type{margin-top:0}
+input{width:100%;font-size:16px;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--text);outline:none}
+input:focus{border-color:var(--brand)}
+input.bad{border-color:var(--err)}
+.err{color:var(--err);font-size:12px;min-height:16px;margin-top:4px}
+.amt{position:relative}.amt span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.amt input{padding-left:30px}
+button{width:100%;margin-top:18px;padding:14px;font-size:16px;font-weight:600;border:0;border-radius:10px;background:var(--brand);color:var(--brand-t);cursor:pointer}
+.hidden{display:none}
+.center{text-align:center}
+.spin{width:56px;height:56px;margin:12px auto 18px;border:5px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.big{font-size:32px;font-weight:700;margin:6px 0 2px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.row span:first-child{color:var(--muted)}.row span:last-child{font-weight:600;text-align:right;word-break:break-all}
+.eta{margin-top:16px;padding:12px;border-radius:10px;background:var(--bg);font-size:13px;color:var(--muted)}
+.eta b{color:var(--text);display:block;margin-top:2px;font-size:14px}
+.link{background:none;color:var(--brand);margin-top:10px}
+.cd{margin-top:16px;text-align:left}.cd small{font-size:13px;color:var(--muted)}
+.boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 0;text-align:center}
+.box b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.box span{font-size:11px;color:var(--muted)}
+.done{color:var(--ok);font-weight:700;margin-top:8px}
+#s-ok{text-align:center;padding:60px 0}
+.tick{width:110px;height:110px;margin:0 auto 20px;display:block}
+.tick circle{fill:none;stroke:var(--ok);stroke-width:5;stroke-dasharray:289;stroke-dashoffset:289;transform:rotate(-90deg);transform-origin:50% 50%}
+.tick path{fill:none;stroke:var(--ok);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60}
+#s-ok.play .tick{animation:pop .5s ease .7s both}
+#s-ok.play .tick circle{animation:draw .7s ease forwards}
+#s-ok.play .tick path{animation:draw2 .4s ease .55s forwards}
+#s-ok.play .okt{animation:fade .5s ease .9s both}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes draw2{to{stroke-dashoffset:0}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.okt h1{margin:0 0 6px}.okt .big{color:var(--ok)}
+
+/* ===== clean bank theme ===== */
+.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+:root{--bg:#f2f5fa;--card:#fff;--text:#1b2438;--muted:#66708a;--line:#e3e8f1;--brand:#0b5cad;--brand-t:#fff;--gold:#f9b233;--tint:#e7f0fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#171e33;--text:#e8ecf7;--muted:#9aa5c2;--line:#27304d;--brand:#4d8fe0;--tint:#1f2b4a}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#171e33;--text:#e8ecf7;--muted:#9aa5c2;--line:#27304d;--brand:#4d8fe0;--tint:#1f2b4a}
+body{font-size:15px;line-height:1.4}
+.card{border-radius:14px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
+input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 22%,transparent)}
+button#go{box-shadow:none}
+.bio{background:var(--brand)}
+.hdr{background:var(--brand);border-bottom:3px solid var(--gold);border-radius:12px}
+.hr span{background:var(--gold);color:#1b2438}
+.dtop{background:var(--brand);border-bottom:3px solid var(--gold);border-radius:12px;padding:12px 16px}
+.dtop .lg,.dtop .pw{color:#fff}
+.acd{background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 65%,#000));border-radius:14px}
+.acd .h{color:var(--gold)}
+.acd .r{border-top-color:rgba(255,255,255,.18)}
+.acd .r span,.acd .lk{color:rgba(255,255,255,.82)}
+.acd .vb{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3)}
+.sec{position:relative;padding-left:12px;font-size:13px;letter-spacing:.6px;text-transform:uppercase;margin:20px 0 10px}
+.sec::before{content:"";position:absolute;left:0;top:50%;width:4px;height:15px;margin-top:-7px;background:var(--gold);border-radius:2px}
+.g3{gap:10px}
+.t{border-radius:12px;min-height:98px;padding:14px 6px 12px;gap:8px;font-size:12px;font-weight:500;line-height:1.25;justify-content:flex-start;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.t .ic{width:44px;height:44px;padding:11px;border-radius:50%;background:var(--tint);color:var(--brand)}
+.t.act{border-color:var(--line)}.t.act:active{background:var(--tint)}
+#t-ft{justify-content:flex-start;padding:10px 16px;min-height:68px;font-size:15px;font-weight:600}
+.band{background:var(--tint)}
+.nav{background:var(--card);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(16,24,40,.06)}
+.nav div{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:2px;color:var(--muted);font-size:11px}
+.nav .on{color:var(--brand);font-weight:600}
+.ab{border-radius:12px;gap:6px;font-size:12px}
+.ab .ic{width:22px;height:22px;color:var(--brand)}
+.opt{border-radius:12px}
+.opt .ic{width:44px;height:44px;padding:11px;border-radius:50%;background:var(--tint);color:var(--brand)}
+.demot{background:var(--tint);color:var(--brand)}
+.dtop .pw .ic{width:22px;height:22px}
+.hdr{gap:12px}
+.hr{flex:none;align-items:flex-end}
+.hr span{white-space:nowrap;font-size:10.5px;letter-spacing:.4px;padding:4px 10px;line-height:1.2}
+.hl{min-width:0}.hl small{line-height:1.35;word-break:break-word}
+.amlink{display:inline-flex;align-items:center;gap:8px;width:auto;margin:22px auto 6px;padding:10px 16px;background:transparent;color:var(--brand);border:1px solid var(--line);border-radius:24px;font-size:13px;font-weight:600}
+.amlink .ic{width:18px;height:18px}
+.ipick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.ipick button{margin:0;padding:0;height:56px;border-radius:14px;background:var(--card);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--brand)}
+.ipick button.sel{border-color:var(--brand);background:var(--tint)}
+.ipick .ic{width:26px;height:26px}
+.cpick{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.cpick button{width:34px;height:34px;margin:0;padding:0;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line)}
+.cpick button.sel{box-shadow:0 0 0 2px var(--brand)}
+.prev{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0 14px}
+.sub{font-size:13px;color:var(--muted);margin:16px 0 0;font-weight:600}
+.btn2{background:var(--card);color:var(--text);border:1px solid var(--line)}
+#s0 .center{display:flex;flex-direction:column;min-height:calc(100vh - 90px)}
+#s0 .center>*{align-self:stretch}
+#s0 .center>.amlink{align-self:center;margin-top:auto}
+#s0 .terms{margin-top:40px;margin-bottom:18px}
+.uplb{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:14px;font-size:16px;font-weight:600;border-radius:12px;cursor:pointer;width:100%}
+#am-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.upm{font-size:12px;min-height:16px;margin-top:6px;text-align:center}
+.avwrap{position:relative;display:inline-block;cursor:pointer}
+.avwrap .cam{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--card)}
+.avwrap .cam .ic{width:16px;height:16px}
+#pr-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+.ring{display:flex;align-items:center;gap:16px;margin-top:6px}
+.ring svg{width:96px;height:96px;flex:none}
+.sti{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.sti .ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.sti.fin .ck{background:var(--ok);border-color:var(--ok)}
+.sti .ck .ic{width:14px;height:14px;stroke-width:3}
+.sti em{margin-left:auto;font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}
+.sti.todo{cursor:pointer}.sti.todo em{color:var(--brand);font-weight:600}
+.nav div[data-go]{cursor:pointer}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l5 5 9-10"/></symbol><symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></symbol><symbol id="i-repeat" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></symbol><symbol id="i-atm" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></symbol><symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-building" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></symbol><symbol id="i-gift" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol><symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4M8 14h.01M16 14h.01"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8"/></symbol><symbol id="i-calc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></symbol><symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M20 20h.01M17 20h3"/></symbol><symbol id="i-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></symbol><symbol id="i-power" viewBox="0 0 24 24"><path d="M18.4 6.6a9 9 0 1 1-12.8 0M12 2v10"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol></defs></svg>
+<div class="wrap">
+
+
+<div class="ov hidden" id="ov"><div class="ovc">
+  <div id="ov-load"><div class="spin"></div><b id="ov-t">Connecting…</b></div>
+  <div id="ov-fail" class="hidden"><div class="fx">✕</div><b>Connection failed</b><small>Please check your internet connection and try again.</small><button id="ov-retry">Retry</button><button class="link" id="ov-close">Close</button></div>
+</div></div>
+
+<section id="s0">
+  <div class="tg"><span>Dark mode</span><button class="sw" id="dm" role="switch" aria-checked="false" aria-label="Dark mode"><i></i></button></div>
+  <div class="center" style="padding-top:8px">
+    <div id="lg-login" style="display:flex;justify-content:center"></div>
+    <div id="nm-login" style="font-size:26px;font-weight:800;color:var(--brand);margin-top:6px">PayMerchant</div>
+    <div style="font-size:12px;letter-spacing:2px;color:var(--muted)">THE MERCHANT APP</div>
+    <h1 style="color:var(--brand);font-weight:500;margin:34px 0 4px">Welcome</h1>
+    <div style="font-size:22px;font-weight:700;color:var(--brand)">Rejin Renganathan</div>
+    <div style="margin-top:22px;font-weight:700">Login using 5 digit Passcode</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">Do not disclose your Passcode to anyone</div>
+    <div class="pc" id="pc"><input type="password" inputmode="numeric" maxlength="1"><input type="password" inputmode="numeric" maxlength="1"><input type="password" inputmode="numeric" maxlength="1"><input type="password" inputmode="numeric" maxlength="1"><input type="password" inputmode="numeric" maxlength="1"></div>
+    <div class="pcrow"><button class="bio" id="bio">Register with Biometric</button><span class="forgot">Forgot Passcode?</span></div>
+    <div class="terms">By opting to login, you agree and accept all the applicable <u>Terms &amp; Conditions</u></div>
+    <button class="amlink" id="am-open"><svg class="ic"><use href="#i-sliders"/></svg>App management</button>
+  </div>
+</section>
+
+<section id="s-am" class="hidden">
+  <button class="bk" data-to="s0">← Back</button>
+  <h1 style="margin:0 0 12px">App management</h1>
+  <div class="card">
+    <div class="prev"><div id="am-prev"></div><b id="am-prev-n" style="font-size:20px;color:var(--brand)"></b></div>
+    <label for="am-name">App name</label>
+    <div style="display:flex;gap:8px;align-items:center"><input id="am-name" maxlength="24" autocomplete="off" placeholder="Enter app name"><svg class="ic" style="color:var(--muted)"><use href="#i-edit"/></svg></div>
+    <div class="err" id="e-am-name"></div>
+    <div class="sub">App icon</div>
+    <div class="ipick" id="am-icons"></div>
+    <label class="btn2 uplb" for="am-file"><svg class="ic"><use href="#i-image"/></svg>Upload your own image</label>
+    <input type="file" id="am-file" accept="image/*">
+    <div id="am-upmsg" class="upm"></div>
+    <button class="link" id="am-rm" style="display:none;margin-top:4px">Remove uploaded image</button>
+    <div class="sub">Icon colour</div>
+    <div class="cpick" id="am-cols"></div>
+    <button id="am-save">Save changes</button>
+    <button class="link" id="am-reset">Reset to default</button>
+  </div>
+</section>
+
+<section id="s-pr" class="hidden" style="padding-bottom:84px">
+  <div class="dtop"><div class="lg">My Profile</div></div>
+  <div class="card center" style="margin-top:12px">
+    <label class="avwrap" for="pr-file"><span id="pr-av" style="display:block"></span><span class="cam"><svg class="ic"><use href="#i-image"/></svg></span></label>
+    <input type="file" id="pr-file" accept="image/*">
+    <h1 style="margin:12px 0 2px;font-size:20px">Rejin Renganathan</h1>
+    <div style="color:var(--muted);font-size:13px">Savings Account · 110151873252</div>
+    <div id="pr-msg" class="upm"></div>
+    <button class="link" id="pr-rm" style="display:none;margin-top:0">Remove photo</button>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="sec" style="margin-top:0">Account strength</div>
+    <div class="ring"><div id="pr-ring"></div><div><div id="pr-lab" style="font-size:20px;font-weight:700"></div><div id="pr-tip" style="font-size:13px;color:var(--muted);margin-top:4px"></div></div></div>
+    <div id="pr-list" style="margin-top:8px"></div>
+  </div>
+  <div class="nav"><div data-go="s0b"><svg class="ic"><use href="#i-bank"/></svg>Banking</div><div><svg class="ic"><use href="#i-bulb"/></svg>Bill Pay</div><div><svg class="ic"><use href="#i-qr"/></svg>UPI</div><div><svg class="ic"><use href="#i-card"/></svg>Cards</div><div data-go="s-pr" class="on"><svg class="ic"><use href="#i-user"/></svg>Profile</div></div>
+</section>
+
+<section id="s0old" class="hidden">
+  <div class="hdr"><div class="hl"><b>Welcome back</b><small>Rejin Renganathan</small></div><div class="hr"><span>SAVINGS ACCOUNT</span></div></div>
+  <div class="card center">
+    <h1 style="margin:0">Enter MPIN</h1>
+    <div style="color:var(--muted);font-size:13px;margin-top:4px">Enter any 4 digits to log in</div>
+    <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+    <div class="pad">
+      <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+      <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+      <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+      <span></span><button class="key" data-k="0">0</button><button class="key" data-k="del">⌫</button>
+    </div>
+  </div>
+</section>
+
+<section id="s0b" class="hidden" style="padding-bottom:84px">
+  <button class="bk" data-to="s0">← Back</button>
+  <div class="dtop"><div class="lg" id="lg-home"></div><div class="pw" id="logout" role="button" tabindex="0" aria-label="Log out" style="cursor:pointer"><svg class="ic"><use href="#i-power"/></svg></div></div>
+  <div class="acd">
+    <div class="h">ACCOUNT DETAILS</div>
+    <div class="r"><span>Account holder</span><b>Rejin Renganathan</b></div>
+    <div class="r"><span>Account number</span><b>110151873252</b></div>
+    <div class="r"><span>Account type</span><b>Savings Account</b></div>
+    <div class="vb" id="vb"><b id="vbt">View Balance</b></div>
+    <div class="lk">Open FD/RD &nbsp;|&nbsp; NEFT/RTGS &nbsp;|&nbsp; LOANS</div>
+  </div>
+  <div class="acts">
+    <button class="ab" id="a-tx"><svg class="ic"><use href="#i-list"/></svg>View Transactions</button>
+    
+    
+  </div>
+  
+
+  <div class="sec">FUNDS TRANSFER</div>
+  <div class="t act" id="t-ft" style="flex-direction:row;gap:12px;font-size:15px;font-weight:700;min-height:64px"><svg class="ic"><use href="#i-send"/></svg>Fund Transfer</div>
+
+  <div class="sec">SERVICES</div>
+  <div class="g3">
+    <div class="t"><svg class="ic"><use href="#i-book"/></svg>Manage Accounts</div>
+    <div class="t act" id="t-th"><svg class="ic"><use href="#i-clock"/></svg>Transaction History</div>
+    <div class="t act" id="t-mb"><svg class="ic"><use href="#i-user"/></svg>Manage Beneficiary</div>
+    <div class="t"><svg class="ic"><use href="#i-building"/></svg>Non-Financial Services</div>
+    <div class="t"><svg class="ic"><use href="#i-gift"/></svg>Donation</div>
+    <div class="t"><svg class="ic"><use href="#i-shield"/></svg>Insurance</div>
+  </div>
+
+  <div class="band">
+    <div class="sec">LIFE STYLE <span class="nw">New</span></div>
+    <div class="g3">
+      <div class="t"><svg class="ic"><use href="#i-bus"/></svg>Bus</div>
+      <div class="t"><svg class="ic"><use href="#i-phone"/></svg>Recharge</div>
+      <div class="t"><svg class="ic"><use href="#i-plane"/></svg>Flights</div>
+    </div>
+  </div>
+
+  <div class="sec">GOVT. SCHEMES</div>
+  <div class="g3">
+    <div class="t"><svg class="ic"><use href="#i-heart"/></svg>Atal Pension</div>
+    <div class="t"><svg class="ic"><use href="#i-file"/></svg>Submit Pensioner</div>
+    <div class="t"><svg class="ic"><use href="#i-calc"/></svg>Re-generate tax</div>
+  </div>
+
+  <div class="nav"><div data-go="s0b" class="on"><svg class="ic"><use href="#i-bank"/></svg>Banking</div><div><svg class="ic"><use href="#i-bulb"/></svg>Bill Pay</div><div><svg class="ic"><use href="#i-qr"/></svg>UPI</div><div><svg class="ic"><use href="#i-card"/></svg>Cards</div><div data-go="s-pr"><svg class="ic"><use href="#i-user"/></svg>Profile</div></div>
+</section>
+
+<section id="s0bold" class="hidden">
+  <div class="hdr"><div class="hl"><b>Rejin Renganathan</b><small>110151873252</small></div><div class="hr"><span>SAVINGS ACCOUNT</span></div></div>
+  <div class="bal"><small>Available balance</small><div class="big">₹41,00,569.00</div></div>
+  <div class="tiles">
+    <div class="tile act"><svg class="ic"><use href="#i-send"/></svg>Fund Transfer</div>
+    <div class="tile"><svg class="ic"><use href="#i-file"/></svg>Statement</div>
+    <div class="tile"><svg class="ic"><use href="#i-user"/></svg>Beneficiaries</div>
+    <div class="tile"><svg class="ic"><use href="#i-card"/></svg>Cards</div>
+  </div>
+</section>
+
+<section id="s1" class="hidden">
+  <button class="bk" data-to="s-ft">← Back</button>
+  <div class="hdr"><div class="hl"><b>Fund Transfer</b><small>Rejin Renganathan</small><small>110151873252</small></div><div class="hr"><span>SAVINGS ACCOUNT</span><small>Account balance</small><strong id="hdr-bal">₹41,00,569.00</strong></div></div>
+  <h1>Transfer money</h1>
+  <div class="card">
+    <label for="name">Account holder name</label>
+    <input id="name" autocomplete="off" placeholder="e.g. Rahul Sharma">
+    <div class="err" id="e-name"></div>
+    <label for="acc">Account number</label>
+    <input id="acc" inputmode="numeric" autocomplete="off" placeholder="9–18 digits">
+    <div class="err" id="e-acc"></div>
+    <label for="ifsc">IFSC code</label>
+    <input id="ifsc" autocomplete="off" maxlength="11" placeholder="e.g. HDFC0001234" style="text-transform:uppercase">
+    <div class="err" id="e-ifsc"></div>
+    <label for="amt">Enter amount</label>
+    <div class="amt"><span>₹</span><input id="amt" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+    <div class="err" id="e-amt"></div>
+    <button id="go">Continue</button>
+  </div>
+</section>
+
+<section id="s-tx" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <div class="hdr"><div class="hl"><b>Transactions</b><small>Rejin Renganathan · 110151873252</small></div><div class="hr"><span>SAVINGS ACCOUNT</span></div></div>
+  <div class="acts" style="grid-template-columns:1fr 1fr;margin-top:0">
+    <button class="ab" id="a-dl"><svg class="ic"><use href="#i-download"/></svg>Download Statement</button>
+    <button class="ab" id="a-ml"><svg class="ic"><use href="#i-mail"/></svg>Send Statement to Mail</button>
+  </div>
+  <div class="sbar"><span id="tx-bk" style="cursor:pointer">←</span><input id="tx-q" placeholder="Search transactions" autocomplete="off"></div>
+  <div class="chips"><span class="chip" id="chip-st">Status ▾</span><span class="chip">Payment method ▾</span><span class="chip">Date ▾</span></div>
+  <div class="txl" id="txl"></div>
+  <button class="link" id="tx-back">← Back to Home</button>
+</section>
+
+<section id="s-ct" class="hidden">
+  <button class="bk" data-to="s1">← Back</button>
+  <div class="card">
+    <h1 style="margin:0 0 4px">Confirm transaction</h1>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Please check the details before you continue</div>
+    <div class="big center" id="ct-amt" style="margin:0 0 8px"></div>
+    <div class="row"><span>From account</span><span>110151873252</span></div>
+    <div class="row"><span>Account holder name</span><span id="ct-name"></span></div>
+    <div class="row"><span>Account number</span><span id="ct-acc"></span></div>
+    <div class="row"><span>IFSC code</span><span id="ct-ifsc"></span></div>
+    <button id="ct-ok">Confirm</button>
+    <button class="link" id="ct-cancel" style="color:var(--err)">Cancel transaction</button>
+  </div>
+</section>
+
+<section id="s-cx" class="hidden">
+  <div class="card center">
+    <div class="fx">✕</div>
+    <h1 style="margin:0 0 6px">Transaction cancelled</h1>
+    <div style="color:var(--muted);font-size:14px">No money has been sent.</div>
+    <button id="cx-home">Back to Home</button>
+  </div>
+</section>
+
+<section id="s-pw" class="hidden">
+  <button class="bk" data-to="s-ct">← Back</button>
+  <div class="card">
+    <h1 style="margin:0 0 4px">Transaction password</h1>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:14px">Confirm this transfer to continue</div>
+    <div class="big" id="pw-amt" style="margin:0 0 8px"></div>
+    <div class="row"><span>Paying to</span><span id="pw-name"></span></div>
+    <div class="row"><span>Account number</span><span id="pw-acc"></span></div>
+    <label for="txp" style="margin-top:16px">Enter transaction password</label>
+    <input id="txp" type="password" autocomplete="off" placeholder="Transaction password">
+    <div class="err" id="e-txp"></div>
+    <button id="pw-ok">Confirm</button>
+    <button class="link" id="pw-back">Cancel</button>
+  </div>
+</section>
+
+<section id="s-ok" class="hidden">
+  <svg class="tick" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46"/><path d="M30 52 L44 66 L71 36"/></svg>
+  <div class="okt"><h1>Details confirmed</h1><div style="color:var(--muted);font-size:14px">Sending money</div><div class="big" id="ok-amt"></div></div>
+</section>
+
+<section id="s-ft" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <h1 style="margin:0 0 12px">Fund Transfer</h1>
+  <div class="g3">
+    <div class="t act" id="toTransfer"><svg class="ic"><use href="#i-bank"/></svg>Within Bank</div>
+    <div class="t act" id="toTransfer2"><svg class="ic"><use href="#i-repeat"/></svg>Other Banks (IMPS)</div>
+    <div class="t"><span class="nw">New</span><svg class="ic"><use href="#i-atm"/></svg>Card-less Cash</div>
+    <div class="t act" id="t-add"><svg class="ic"><use href="#i-userplus"/></svg>Add Payee</div>
+    <div class="t act" id="t-send"><svg class="ic"><use href="#i-users"/></svg>Send Money to Payee</div>
+  </div>
+</section>
+
+<section id="s-pt" class="hidden">
+  <button class="bk" data-to="s-ft">← Back</button>
+  <h1 style="margin:0 0 4px">Add payee</h1>
+  <div style="color:var(--muted);font-size:14px">Where does the payee have an account?</div>
+  <div class="opt" id="opt-in"><svg class="ic"><use href="#i-bank"/></svg><div>Within Bank<small>Payee has an account in the same bank</small></div></div>
+  <div class="opt" id="opt-out"><svg class="ic"><use href="#i-repeat"/></svg><div>Other Bank<small>Payee has an account in another bank</small></div></div>
+</section>
+
+<section id="s-pf" class="hidden">
+  <button class="bk" data-to="s-pt">← Back</button>
+  <h1 id="pf-title" style="margin:0 0 14px">Add payee</h1>
+  <div class="card">
+    <label for="pn">Account holder name</label>
+    <input id="pn" autocomplete="off" placeholder="e.g. Rahul Sharma">
+    <div class="err" id="e-pn"></div>
+    <label for="pa">Account number</label>
+    <input id="pa" inputmode="numeric" autocomplete="off" placeholder="9–18 digits">
+    <div class="err" id="e-pa"></div>
+    <div id="pf-ifsc-wrap">
+      <label for="pi">IFSC code</label>
+      <input id="pi" autocomplete="off" maxlength="11" placeholder="e.g. HDFC0001234" style="text-transform:uppercase">
+      <div class="err" id="e-pi"></div>
+    </div>
+    <button id="pf-add">Add Beneficiary</button>
+  </div>
+</section>
+
+<section id="s-pa" class="hidden">
+  <button class="bk" data-to="s-ft">← Back</button>
+  <div class="card center">
+    <svg class="stick" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46"/><path d="M30 52 L44 66 L71 36"/></svg>
+    <h1 id="pa-h" style="margin:0 0 12px">Beneficiary added successfully</h1>
+    <div style="text-align:left">
+      <div class="row"><span>Name</span><span id="pa-name"></span></div>
+      <div class="row"><span>Account number</span><span id="pa-acc"></span></div>
+      <div class="row" id="pa-ifsc-row"><span>IFSC code</span><span id="pa-ifsc"></span></div>
+      <div class="row"><span>Type</span><span id="pa-type"></span></div>
+    </div>
+    <button id="pa-send">Send Money</button>
+    <button class="link" id="pa-home">Back to Home</button>
+  </div>
+</section>
+
+<section id="s-pl" class="hidden">
+  <button class="bk" data-to="s-ft">← Back</button>
+  <h1 style="margin:0 0 12px">Send money to payee</h1>
+  <button class="ab" id="pl-add" style="flex-direction:row;justify-content:center;font-size:14px;padding:12px"><svg class="ic"><use href="#i-plus"/></svg> Add payee</button>
+  <div class="txl" id="pl-list"></div>
+</section>
+
+<section id="s-mb" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <h1 style="margin:0 0 12px">Manage beneficiary</h1>
+  <button class="ab" id="mb-add" style="flex-direction:row;justify-content:center;font-size:14px;padding:12px"><svg class="ic"><use href="#i-plus"/></svg> Add beneficiary</button>
+  <div id="mb-msg" class="eta hidden" style="color:var(--ok);font-weight:600;margin:10px 0 0"></div>
+  <div class="txl" id="mb-list"></div>
+</section>
+
+<div class="ov hidden" id="cf"><div class="ovc">
+  <b id="cf-t">Delete beneficiary?</b><small>This payee will be removed from your saved list.</small>
+  <button id="cf-yes" style="background:var(--err)">Delete</button><button class="link" id="cf-no">Cancel</button>
+</div></div>
+
+<div class="ov hidden" id="lo"><div class="ovc">
+  <b>Log out?</b><small>You will need to enter your passcode to log in again.</small>
+  <button id="lo-yes">Log out</button><button class="link" id="lo-no">Cancel</button>
+</div></div>
+
+<section id="s-suc" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <div class="card center">
+    <svg class="stick" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46"/><path d="M30 52 L44 66 L71 36"/></svg>
+    <h1 style="margin:0 0 4px">Payment successful</h1>
+    <div class="big okc" id="su-amt" style="margin-bottom:10px"></div>
+    <div style="text-align:left">
+      <div class="row"><span>Paid to</span><span id="su-name"></span></div>
+      <div class="row"><span>Account number</span><span id="su-acc"></span></div>
+      <div class="row"><span>IFSC code</span><span id="su-ifsc"></span></div>
+      <div class="row"><span>Transaction ID</span><span id="su-txn"></span></div>
+      <div class="row"><span>Date &amp; time</span><span id="su-time"></span></div>
+      <div class="row"><span>Status</span><span class="okc">Successful</span></div>
+      <div class="row"><span>Available balance</span><span id="su-bal"></span></div>
+    </div>
+    <button id="suc-done">Done</button>
+    <div class="note">Demo transaction · no real money was moved</div>
+  </div>
+</section>
+
+<section id="s-ld" class="hidden">
+  <div class="card center"><div class="spin"></div><h1 style="margin:0 0 4px">Checking with your bank…</h1><div style="color:var(--muted);font-size:14px">Please wait</div></div>
+</section>
+
+<section id="s-ap" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <div class="card center">
+    <div class="wi">!</div>
+    <h1 style="margin:0 0 6px">Bank approval required</h1>
+    <div style="color:var(--muted);font-size:14px;margin-bottom:12px">This transaction needs approval from your bank. Please contact the bank to continue.</div>
+    <div class="big" id="ap-amt" style="margin-bottom:8px"></div>
+    <div style="text-align:left">
+      <div class="row"><span>Beneficiary</span><span id="ap-name"></span></div>
+      <div class="row"><span>Account number</span><span id="ap-acc"></span></div>
+      <div class="row"><span>Reference ID</span><span id="ap-txn"></span></div>
+    </div>
+    <button id="ap-contact">Contact Bank</button>
+    <div class="eta hidden" id="ap-help" style="text-align:left">Please visit your nearest branch or call your bank’s customer care to approve this transaction.</div>
+    <button class="link" id="ap-done">Back to Home</button>
+  </div>
+</section>
+
+<section id="s2" class="hidden">
+  <button class="bk" data-to="s0b">← Back</button>
+  <div class="card center">
+    <div class="spin"></div>
+    <h1 style="margin:0 0 4px">Your transaction is processing</h1>
+    <div style="color:var(--muted);font-size:14px">Please don’t close this page</div>
+    <div class="big" id="d-amt"></div>
+    <div style="text-align:left;margin-top:16px">
+      <div class="row"><span>Account holder</span><span id="d-name"></span></div>
+      <div class="row"><span>Account number</span><span id="d-acc"></span></div>
+      <div class="row"><span>IFSC code</span><span id="d-ifsc"></span></div>
+      <div class="row"><span>Transaction ID</span><span id="d-txn"></span></div>
+    </div>
+    <div class="eta" style="text-align:left">Expected credit time<b>Before 16/11/2026 12:00:00 PM</b></div>
+    <div class="cd"><small>Cooling period remaining</small>
+      <div class="boxes" id="boxes">
+        <div class="box"><b id="c-d">00</b><span>Days</span></div>
+        <div class="box"><b id="c-h">00</b><span>Hours</span></div>
+        <div class="box"><b id="c-m">00</b><span>Minutes</span></div>
+        <div class="box"><b id="c-s">00</b><span>Seconds</span></div>
+      </div>
+      <div class="done hidden" id="c-done">Amount credited ✓</div>
+    </div>
+    <button class="link" id="again">Start a new transfer</button>
+  </div>
+</section>
+
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function setErr(k,m){$('e-'+k).textContent=m||'';$(k).classList.toggle('bad',!!m);return !m}
+$('go').onclick=()=>{
+  const name=$('name').value.trim(),acc=$('acc').value.trim(),ifsc=$('ifsc').value.trim().toUpperCase(),amt=parseFloat($('amt').value);
+  let ok=true;
+  ok=setErr('name',name.length<2?'Enter the account holder name':'')&&ok;
+  ok=setErr('acc',/^\d{9,18}$/.test(acc)?'':'Enter a valid account number (9–18 digits)')&&ok;
+  ok=setErr('ifsc',/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)?'':'Enter a valid 11-character IFSC code')&&ok;
+  ok=setErr('amt',amt>0?'':'Enter an amount greater than 0')&&ok;
+  if(!ok)return;
+  $('d-name').textContent=name;
+  $('d-acc').textContent=acc;
+  $('d-ifsc').textContent=ifsc;
+  const r=new Uint32Array(3);crypto.getRandomValues(r);
+  $('d-txn').textContent='TXN'+Array.from(r,n=>String(n%1000000).padStart(6,'0')).join('').slice(0,12);
+  $('d-amt').textContent='₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  curAmt=amt;$('pw-amt').textContent=$('d-amt').textContent;
+  $('pw-name').textContent=name;
+  $('pw-acc').textContent=acc;
+  $('s1').classList.add('hidden');
+  fillCf();$('s-ct').classList.remove('hidden');
+  window.scrollTo(0,0);
+};
+const pcs=[...document.querySelectorAll('#pc input')];
+function pcGo(){if(pcs.every(i=>i.value))setTimeout(()=>{pcs.forEach(i=>i.value='');$('s0').classList.add('hidden');$('s0b').classList.remove('hidden');window.scrollTo(0,0)},350)}
+pcs.forEach((inp,i)=>{
+  inp.oninput=()=>{inp.value=inp.value.replace(/\D/g,'').slice(-1);if(inp.value&&pcs[i+1])pcs[i+1].focus();pcGo()};
+  inp.onkeydown=e=>{if(e.key==='Backspace'&&!inp.value&&pcs[i-1]){pcs[i-1].focus();pcs[i-1].value=''}};
+});
+$('bio').onclick=()=>{BIO=true;try{localStorage.setItem('pm_bio','1')}catch(e){}pcs.forEach(i=>i.value='1');pcGo()};
+let pin='';
+function dots(){document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i<pin.length))}
+document.querySelectorAll('.key').forEach(k=>k.onclick=()=>{
+  const v=k.dataset.k;
+  if(v==='del')pin=pin.slice(0,-1);else if(pin.length<4)pin+=v;
+  dots();
+  if(pin.length===4)setTimeout(()=>{pin='';dots();$('s0').classList.add('hidden');$('s0b').classList.remove('hidden');window.scrollTo(0,0)},350);
+});
+$('toTransfer').onclick=()=>show('s1');
+let curAmt=0;
+function fmtNow(){const d=new Date(),q=n=>String(n).padStart(2,'0');return q(d.getDate())+'/'+q(d.getMonth()+1)+'/'+d.getFullYear()+' '+q(d.getHours())+':'+q(d.getMinutes())+':'+q(d.getSeconds())}
+function playOk(){
+  $('s-pw').classList.add('hidden');
+  window.scrollTo(0,0);
+  if(curAmt<100){
+    $('ok-amt').textContent=$('d-amt').textContent;
+    const el=$('s-ok');el.classList.remove('hidden','play');void el.offsetWidth;el.classList.add('play');
+    setTimeout(()=>{
+      el.classList.add('hidden');
+      $('su-amt').textContent=$('d-amt').textContent;$('su-name').textContent=$('d-name').textContent;$('su-acc').textContent=$('d-acc').textContent;
+      $('su-ifsc').textContent=$('d-ifsc').textContent;$('su-txn').textContent=$('d-txn').textContent;$('su-time').textContent=fmtNow();
+      addHist('ok');$('s-suc').classList.remove('hidden');window.scrollTo(0,0);
+    },2200);
+  }else{
+    $('s-ld').classList.remove('hidden');
+    setTimeout(()=>{
+      $('s-ld').classList.add('hidden');
+      $('ap-amt').textContent=$('d-amt').textContent;$('ap-name').textContent=$('d-name').textContent;$('ap-acc').textContent=$('d-acc').textContent;$('ap-txn').textContent=$('d-txn').textContent;
+      addHist('pend');$('s-ap').classList.remove('hidden');window.scrollTo(0,0);
+    },2000);
+  }
+}
+function goHome(id){$(id).classList.add('hidden');['name','acc','ifsc','amt'].forEach(k=>$(k).value='');$('s0b').classList.remove('hidden');window.scrollTo(0,0)}
+$('suc-done').onclick=()=>goHome('s-suc');
+$('ap-done').onclick=()=>goHome('s-ap');
+$('ap-contact').onclick=()=>$('ap-help').classList.toggle('hidden');
+$('pw-ok').onclick=()=>{
+  if($('txp').value.length<4){setErr('txp','Enter your transaction password');return}
+  setErr('txp','');$('txp').value='';playOk();
+};
+$('txp').onkeydown=e=>{if(e.key==='Enter')$('pw-ok').click()};
+$('pw-back').onclick=()=>{$('s-pw').classList.add('hidden');$('s1').classList.remove('hidden');$('txp').value='';setErr('txp','')};
+const TXN=['Grocery Mart','Fuel Station','Salary Credit','Electricity Bill','ATM Withdrawal','Online Shopping','Restaurant','Mobile Recharge','Metro Card Top-up','Pharmacy','Rent Transfer','Cashback Credit'];
+let txBuilt=false;
+const TXD=[
+ ['Amaresh',22000,'cr','20 November'],
+ ['Rapido',95,'db','20 November'],
+ ['Suresh Kumar',40,'db','20 November'],
+ ['Divya Nair',240,'db','20 November'],
+ ['Divya Nair',240,'fail','20 November'],
+ ['Meera Joshi',100,'db','20 November'],
+ ['Rapido',40,'db','20 November'],
+ ['Anita Rao',1,'cr','20 November']
+];
+const AVC=['#e91e63','#ef6c00','#7b4bc2','#607d8b','#5c6bc0','#00897b','#6d4c41'];
+let stF=0;
+function renderTx(){
+  const q=($('tx-q').value||'').toLowerCase();
+  const h=ALLTX().filter(t=>t[0].toLowerCase().includes(q)&&(stF===0||(stF===1&&t[2]==='fail')||(stF===2&&t[2]==='cr'))).map(t=>{
+    const c=AVC[(t[0].charCodeAt(0)+t[0].length)%AVC.length],amt='₹'+Number(t[1]).toLocaleString('en-IN');
+    const cls=t[2]==='cr'?'cr':t[2]==='fail'?'fa':'db';
+    const lab=t[2]==='fail'?'<em class="fl">✕ Failed</em>':t[2]==='pend'?'<em class="fl" style="color:#f59e0b">Pending approval</em>':'';
+    return '<div class="tr"><div class="av" style="background:'+c+'">'+esc(t[0][0].toUpperCase())+'</div><div class="tm"><b>'+esc(t[0])+'</b><small>'+esc(t[3])+(t[4]?' · '+esc(t[4]):'')+'</small></div><div class="ta"><span class="'+cls+'">'+(t[2]==='cr'?'+ ':'')+amt+'</span>'+lab+'</div></div>';
+  }).join('');
+  $('txl').innerHTML='<div class="demot">TRANSACTIONS</div>'+(h||'<div style="padding:16px;text-align:center;color:var(--muted)">No transactions found</div>');
+}
+$('tx-q').oninput=renderTx;
+$('chip-st').onclick=()=>{stF=(stF+1)%3;$('chip-st').textContent=['Status \u25be','Failed \u25be','Received \u25be'][stF];renderTx()};
+$('tx-bk').onclick=()=>$('tx-back').click();
+$('a-tx').onclick=()=>{const el=$('txl');renderTx();$('s0b').classList.add('hidden');$('s-tx').classList.remove('hidden');window.scrollTo(0,0)};
+$('tx-back').onclick=()=>{$('s-tx').classList.add('hidden');$('s0b').classList.remove('hidden');window.scrollTo(0,0)};
+let ovT,lastLbl='';
+function conn(lbl){
+  lastLbl=lbl;
+  $('ov').classList.remove('hidden');$('ov-fail').classList.add('hidden');$('ov-load').classList.remove('hidden');$('ov-t').textContent=lbl;
+  clearTimeout(ovT);ovT=setTimeout(()=>{$('ov-load').classList.add('hidden');$('ov-fail').classList.remove('hidden')},2500);
+}
+$('a-dl').onclick=()=>conn('Downloading statement…');
+$('a-ml').onclick=()=>conn('Sending statement to mail…');
+$('ov-retry').onclick=()=>conn(lastLbl);
+$('ov-close').onclick=()=>{clearTimeout(ovT);$('ov').classList.add('hidden')};
+document.querySelectorAll('.bk').forEach(b=>b.onclick=()=>{b.closest('section').classList.add('hidden');$(b.dataset.to).classList.remove('hidden');$('txp').value='';window.scrollTo(0,0)});
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let PAY=[];
+try{PAY=JSON.parse(localStorage.getItem('pm_payees')||'[]')}catch(e){PAY=[]}
+function savePay(){try{localStorage.setItem('pm_payees',JSON.stringify(PAY))}catch(e){}}
+let ptype='in',lastPay=null;
+function show(id){document.querySelectorAll('section').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0)}
+function renderPay(){
+  const box=$('pl-list');
+  if(!PAY.length){box.innerHTML='<div style="padding:18px 4px;text-align:center;color:var(--muted)">No payees added yet</div>';return}
+  box.innerHTML=PAY.map((p,i)=>{
+    const c=AVC[(p.n.charCodeAt(0)+p.n.length)%AVC.length];
+    return '<div class="tr pr" data-i="'+i+'"><div class="av" style="background:'+c+'">'+esc(p.n[0].toUpperCase())+'</div><div class="tm"><b>'+esc(p.n)+'</b><small>•••• '+esc(p.a.slice(-4))+' · '+(p.t==='in'?'Within Bank':'Other Bank')+'</small></div><span style="color:var(--muted);font-size:20px">›</span></div>';
+  }).join('');
+}
+function sendTo(p){
+  $('name').value=p.n;$('acc').value=p.a;$('ifsc').value=p.i;$('amt').value='';
+  ['name','acc','ifsc','amt'].forEach(k=>setErr(k,''));
+  show('s1');$('amt').focus();
+}
+function openAdd(t){
+  ptype=t;editIdx=-1;$('pf-add').textContent='Add Beneficiary';document.querySelector('#s-pf .bk').dataset.to='s-pt';
+  $('pf-title').textContent=t==='in'?'Add payee · Within Bank':'Add payee · Other Bank';
+  $('pf-ifsc-wrap').classList.toggle('hidden',t==='in');
+  ['pn','pa','pi'].forEach(k=>{$(k).value='';setErr(k,'')});
+  show('s-pf');
+}
+$('t-add').onclick=()=>show('s-pt');
+$('t-send').onclick=()=>{renderPay();show('s-pl')};
+$('pl-add').onclick=()=>show('s-pt');
+$('opt-in').onclick=()=>openAdd('in');
+$('opt-out').onclick=()=>openAdd('out');
+$('pl-list').onclick=e=>{const r=e.target.closest('.pr');if(r)sendTo(PAY[+r.dataset.i])};
+$('pf-add').onclick=()=>{
+  const n=$('pn').value.trim(),a=$('pa').value.trim(),i=ptype==='in'?'PAYM0000001':$('pi').value.trim().toUpperCase();
+  let ok=true;
+  ok=setErr('pn',n.length<2?'Enter the account holder name':'')&&ok;
+  ok=setErr('pa',/^\d{9,18}$/.test(a)?'':'Enter a valid account number (9–18 digits)')&&ok;
+  if(ptype==='out')ok=setErr('pi',/^[A-Z]{4}0[A-Z0-9]{6}$/.test(i)?'':'Enter a valid 11-character IFSC code')&&ok;
+  if(!ok)return;
+  if(editIdx>=0){PAY[editIdx]={n:n,a:a,i:i,t:ptype};lastPay=PAY[editIdx];}else{PAY=PAY.filter(x=>x.a!==a);PAY.unshift({n:n,a:a,i:i,t:ptype});lastPay=PAY[0];}savePay();$('pa-h').textContent=editIdx>=0?'Beneficiary updated successfully':'Beneficiary added successfully';editIdx=-1;
+  $('pa-name').textContent=n;$('pa-acc').textContent=a;$('pa-ifsc').textContent=i;
+  $('pa-type').textContent=ptype==='in'?'Within Bank':'Other Bank';
+  $('pa-ifsc-row').classList.toggle('hidden',ptype==='in');
+  show('s-pa');
+};
+$('pa-send').onclick=()=>sendTo(lastPay);
+$('pa-home').onclick=()=>show('s0b');
+$('t-ft').onclick=()=>show('s-ft');
+let editIdx=-1,delIdx=-1,mbT;
+function renderMB(){
+  const box=$('mb-list');
+  if(!PAY.length){box.innerHTML='<div style="padding:18px 4px;text-align:center;color:var(--muted)">No beneficiaries added yet</div>';return}
+  box.innerHTML=PAY.map((p,i)=>{
+    const c=AVC[(p.n.charCodeAt(0)+p.n.length)%AVC.length];
+    return '<div class="mbr"><div class="tr" style="border-top:0;padding:0 0 8px"><div class="av" style="background:'+c+'">'+esc(p.n[0].toUpperCase())+'</div><div class="tm"><b>'+esc(p.n)+'</b><small>•••• '+esc(p.a.slice(-4))+' · '+(p.t==='in'?'Within Bank':'Other Bank')+'</small></div></div><div class="mba"><button class="mbb" data-a="send" data-i="'+i+'">Send</button><button class="mbb" data-a="edit" data-i="'+i+'">Edit</button><button class="mbb dd" data-a="del" data-i="'+i+'">Delete</button></div></div>';
+  }).join('');
+}
+function mbMsg(t){const m=$('mb-msg');m.textContent=t;m.classList.remove('hidden');clearTimeout(mbT);mbT=setTimeout(()=>m.classList.add('hidden'),2200)}
+function openEdit(i){
+  const p=PAY[i];editIdx=i;ptype=p.t;
+  $('pf-title').textContent='Edit beneficiary';$('pf-add').textContent='Save Changes';
+  $('pf-ifsc-wrap').classList.toggle('hidden',p.t==='in');
+  $('pn').value=p.n;$('pa').value=p.a;$('pi').value=p.t==='out'?p.i:'';
+  ['pn','pa','pi'].forEach(k=>setErr(k,''));
+  document.querySelector('#s-pf .bk').dataset.to='s-mb';
+  show('s-pf');
+}
+$('t-mb').onclick=()=>{renderMB();show('s-mb')};
+$('mb-add').onclick=()=>show('s-pt');
+$('mb-list').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const i=+b.dataset.i,a=b.dataset.a;
+  if(a==='send')sendTo(PAY[i]);
+  else if(a==='edit')openEdit(i);
+  else if(a==='del'){delIdx=i;$('cf-t').textContent='Delete '+PAY[i].n+'?';$('cf').classList.remove('hidden')}
+};
+$('cf-no').onclick=()=>$('cf').classList.add('hidden');
+$('cf-yes').onclick=()=>{PAY.splice(delIdx,1);savePay();$('cf').classList.add('hidden');renderMB();mbMsg('Beneficiary deleted')};
+let HIST=[];
+try{HIST=JSON.parse(localStorage.getItem('pm_hist')||'[]')}catch(e){HIST=[]}
+function saveHist(){try{localStorage.setItem('pm_hist',JSON.stringify(HIST))}catch(e){}}
+function ALLTX(){return HIST.map(h=>[h.n,h.m,h.s==='ok'?'db':'pend',h.d,h.t]).concat(TXD)}
+function addHist(st){
+  const d=new Date(),M=['January','February','March','April','May','June','July','August','September','October','November','December'],q=n=>String(n).padStart(2,'0');
+  HIST.unshift({n:$('d-name').textContent,a:$('d-acc').textContent,m:curAmt,s:st,d:d.getDate()+' '+M[d.getMonth()]+', '+q(d.getHours())+':'+q(d.getMinutes()),t:$('d-txn').textContent});
+  HIST=HIST.slice(0,200);saveHist();
+  if(st==='ok'){BAL=Math.max(0,Math.round((BAL-curAmt)*100)/100);saveBal();updBal();$('su-bal').textContent=fmtBal()}
+}
+$('t-th').onclick=$('a-tx').onclick;
+function fillCf(){
+  $('ct-amt').textContent=$('d-amt').textContent;$('ct-name').textContent=$('name').value.trim();
+  $('ct-acc').textContent=$('acc').value.trim();$('ct-ifsc').textContent=$('ifsc').value.trim().toUpperCase();
+}
+$('ct-ok').onclick=()=>{$('txp').value='';setErr('txp','');show('s-pw')};
+$('ct-cancel').onclick=()=>show('s-cx');
+$('cx-home').onclick=()=>goHome('s-cx');
+function isDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+function setDm(d,save){
+  document.documentElement.dataset.theme=d?'dark':'light';
+  $('dm').classList.toggle('on',d);$('dm').setAttribute('aria-checked',d?'true':'false');
+  if(save){try{localStorage.setItem('pm_theme',d?'dark':'light')}catch(e){}}
+}
+let savedTh=null;try{savedTh=localStorage.getItem('pm_theme')}catch(e){}
+if(savedTh)setDm(savedTh==='dark',false);else{$('dm').classList.toggle('on',isDark());$('dm').setAttribute('aria-checked',isDark()?'true':'false')}
+$('dm').onclick=()=>setDm(!isDark(),true);
+let shown=false;
+const APPD={name:'PayMerchant',icon:'play',color:'#0b4f9c',img:''};
+let APP=Object.assign({},APPD),DRAFT={};
+try{const a=JSON.parse(localStorage.getItem('pm_app')||'null');if(a&&typeof a==='object')APP=Object.assign({},APPD,a)}catch(e){}
+const AICONS=['play','bank','card','send','shield','user','bulb','heart'];
+const ACOLS=['#0b4f9c','#0f8a5f','#c0392b','#6d3fc0','#e07b00','#222b3a'];
+function logoHtml(c,size){
+  const base='width:'+size+'px;height:'+size+'px;border-radius:50%;flex:none;';
+  if(c.img)return '<img alt="" src="'+c.img.replace(/"/g,'')+'" style="'+base+'object-fit:cover">';
+  const inner=c.icon==='play'?'<svg viewBox="0 0 72 72" style="width:100%;height:100%"><path d="M28 22 L52 36 L28 50 Z" fill="#ffc20e"/></svg>':'<svg class="ic" style="width:56%;height:56%;color:#fff;margin:auto"><use href="#i-'+c.icon+'"/></svg>';
+  return '<div style="'+base+'background:'+c.color+';display:flex;align-items:center;justify-content:center">'+inner+'</div>';
+}
+function applyApp(){
+  $('lg-login').innerHTML=logoHtml(APP,72);$('nm-login').textContent=APP.name;
+  $('lg-home').innerHTML=logoHtml(APP,28)+'<span></span>';$('lg-home').lastChild.textContent=APP.name;
+}
+function drawAm(){
+  $('am-prev').innerHTML=logoHtml(DRAFT,84);$('am-rm').style.display=DRAFT.img?'block':'none';$('am-prev-n').textContent=DRAFT.name||'App name';
+  $('am-icons').innerHTML=AICONS.map(k=>'<button data-k="'+k+'" class="'+(!DRAFT.img&&DRAFT.icon===k?'sel':'')+'" aria-label="'+k+'">'+(k==='play'?'<svg viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>':'<svg class="ic"><use href="#i-'+k+'"/></svg>')+'</button>').join('');
+  $('am-cols').innerHTML=ACOLS.map(c=>'<button data-c="'+c+'" class="'+(DRAFT.color===c?'sel':'')+'" style="background:'+c+'" aria-label="colour"></button>').join('');
+}
+$('am-open').onclick=()=>{DRAFT=Object.assign({},APP);$('am-name').value=DRAFT.name;setErr('am-name','');upMsg('',false);drawAm();show('s-am')};
+$('am-name').oninput=()=>{DRAFT.name=$('am-name').value;$('am-prev-n').textContent=DRAFT.name||'App name'};
+$('am-icons').onclick=e=>{const b=e.target.closest('button');if(!b)return;DRAFT.icon=b.dataset.k;DRAFT.img='';drawAm()};
+$('am-cols').onclick=e=>{const b=e.target.closest('button');if(!b)return;DRAFT.color=b.dataset.c;drawAm()};
+function upMsg(t,bad){const m=$('am-upmsg');m.textContent=t||'';m.style.color=bad?'var(--err)':'var(--ok)'}
+$('am-file').onchange=()=>{
+  const inp=$('am-file'),f=inp.files&&inp.files[0];if(!f)return;
+  if(!/^image\//.test(f.type)){upMsg('Please choose an image file',true);inp.value='';return}
+  if(f.size>8*1024*1024){upMsg('Image is too large (max 8 MB)',true);inp.value='';return}
+  upMsg('Loading image…',false);
+  const r=new FileReader();
+  r.onerror=()=>upMsg('Could not read that image',true);
+  r.onload=()=>{const im=new Image();
+    im.onerror=()=>upMsg('Could not read that image',true);
+    im.onload=()=>{
+      const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');
+      const m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,128,128);
+      DRAFT.img=c.toDataURL('image/png');drawAm();upMsg('Image added · tap Save changes to apply',false);
+    };
+    im.src=r.result};
+  r.readAsDataURL(f);inp.value='';
+};
+$('am-rm').onclick=()=>{DRAFT.img='';drawAm();upMsg('',false)};
+$('am-save').onclick=()=>{
+  const n=(DRAFT.name||'').trim();
+  if(n.length<2){setErr('am-name','Enter an app name (at least 2 characters)');return}
+  setErr('am-name','');DRAFT.name=n;APP=Object.assign({},DRAFT);
+  try{localStorage.setItem('pm_app',JSON.stringify(APP))}catch(e){}
+  applyApp();show('s0');
+};
+$('am-reset').onclick=()=>{DRAFT=Object.assign({},APPD);$('am-name').value=DRAFT.name;setErr('am-name','');drawAm()};
+applyApp();
+let PHOTO='',BIO=false;
+try{PHOTO=localStorage.getItem('pm_photo')||'';BIO=localStorage.getItem('pm_bio')==='1'}catch(e){}
+function prAvHtml(){
+  const b='width:96px;height:96px;border-radius:50%;';
+  return PHOTO?'<img alt="" src="'+PHOTO.replace(/"/g,'')+'" style="'+b+'object-fit:cover;display:block">':'<div style="'+b+'background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700">RR</div>';
+}
+function strengthItems(){return[
+ {t:'Account verified',td:'Account verified',d:true,go:null},
+ {t:'Add a profile photo',td:'Profile photo added',d:!!PHOTO,go:'photo'},
+ {t:'Add a beneficiary',td:'Beneficiary added',d:PAY.length>0,go:'ben'},
+ {t:'Make your first transaction',td:'First transaction made',d:HIST.length>0,go:'txn'},
+ {t:'Register biometric login',td:'Biometric login registered',d:BIO,go:'bio'}]}
+function renderPr(){
+  $('pr-av').innerHTML=prAvHtml();$('pr-rm').style.display=PHOTO?'block':'none';
+  const it=strengthItems(),done=it.filter(x=>x.d).length,pct=done*20;
+  const lab=['','Weak','Fair','Good','Strong','Excellent'][done],col=done<=1?'var(--err)':done===2?'#f59e0b':'var(--ok)';
+  $('pr-ring').innerHTML='<svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="48" cy="48" r="42" fill="none" stroke="'+col+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(pct*2.639)+' 264" transform="rotate(-90 48 48)"/><text x="48" y="55" text-anchor="middle" font-size="22" font-weight="700" fill="var(--text)">'+pct+'%</text></svg>';
+  $('pr-lab').textContent=lab;$('pr-lab').style.color=col;
+  const nx=it.find(x=>!x.d);$('pr-tip').textContent=nx?nx.t+' to make your account stronger.':'Your account is fully set up.';
+  $('pr-list').innerHTML=it.map(x=>'<div class="sti '+(x.d?'fin':'todo')+'"'+(x.d||!x.go?'':' data-go="'+x.go+'"')+'><span class="ck">'+(x.d?'<svg class="ic"><use href="#i-check"/></svg>':'')+'</span><span>'+(x.d?x.td:x.t)+'</span><em>'+(x.d?'+20%':'Do it ›')+'</em></div>').join('');
+}
+$('pr-list').onclick=e=>{
+  const r=e.target.closest('.sti.todo');if(!r)return;const g=r.dataset.go;
+  if(g==='photo')$('pr-file').click();
+  else if(g==='ben')show('s-pt');
+  else if(g==='txn')show('s-ft');
+  else if(g==='bio'){BIO=true;try{localStorage.setItem('pm_bio','1')}catch(e){}renderPr()}
+};
+function prMsg(t,bad){const m=$('pr-msg');m.textContent=t||'';m.style.color=bad?'var(--err)':'var(--ok)'}
+$('pr-file').onchange=()=>{
+  const inp=$('pr-file'),f=inp.files&&inp.files[0];if(!f)return;
+  if(!/^image\//.test(f.type)){prMsg('Please choose an image file',true);inp.value='';return}
+  if(f.size>8*1024*1024){prMsg('Image is too large (max 8 MB)',true);inp.value='';return}
+  const r=new FileReader();
+  r.onerror=()=>prMsg('Could not read that image',true);
+  r.onload=()=>{const im=new Image();
+    im.onerror=()=>prMsg('Could not read that image',true);
+    im.onload=()=>{
+      const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+      const m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,256,256);
+      PHOTO=c.toDataURL('image/jpeg',.85);try{localStorage.setItem('pm_photo',PHOTO)}catch(e){}
+      prMsg('Profile photo updated',false);renderPr();
+    };im.src=r.result};
+  r.readAsDataURL(f);inp.value='';
+};
+$('pr-rm').onclick=()=>{PHOTO='';try{localStorage.removeItem('pm_photo')}catch(e){}prMsg('',false);renderPr()};
+document.querySelectorAll('.nav [data-go]').forEach(d=>d.onclick=()=>{if(d.dataset.go==='s-pr'){prMsg('',false);renderPr()}show(d.dataset.go)});
+
+$('logout').onclick=()=>$('lo').classList.remove('hidden');
+$('logout').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')$('logout').click()};
+$('lo-no').onclick=()=>$('lo').classList.add('hidden');
+$('lo-yes').onclick=()=>{
+  $('lo').classList.add('hidden');
+  shown=false;$('vbt').textContent='View Balance';
+  document.querySelectorAll('#pc input').forEach(i=>i.value='');
+  ['name','acc','ifsc','amt'].forEach(k=>$(k).value='');
+  show('s0');
+};
+let BAL=4100569;
+try{const b=parseFloat(localStorage.getItem('pm_bal'));if(!isNaN(b))BAL=b}catch(e){}
+function saveBal(){try{localStorage.setItem('pm_bal',String(BAL))}catch(e){}}
+function fmtBal(){return '₹'+BAL.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function updBal(){$('hdr-bal').textContent=fmtBal();if(shown)$('vbt').textContent=fmtBal()}
+updBal();$('vb').onclick=()=>{shown=!shown;$('vbt').textContent=shown?fmtBal():'View Balance'};
+$('toTransfer2').onclick=$('toTransfer').onclick;
+const TARGET=new Date(2026,10,16,12,0,0).getTime();
+const p=n=>String(n).padStart(2,'0');
+function tick(){
+  let diff=Math.max(0,TARGET-Date.now());
+  const s=Math.floor(diff/1000);
+  $('c-d').textContent=p(Math.floor(s/86400));
+  $('c-h').textContent=p(Math.floor(s%86400/3600));
+  $('c-m').textContent=p(Math.floor(s%3600/60));
+  $('c-s').textContent=p(s%60);
+  const over=diff===0;
+  $('boxes').classList.toggle('hidden',over);
+  $('c-done').classList.toggle('hidden',!over);
+}
+tick();setInterval(tick,1000);
+$('again').onclick=()=>{['name','acc','ifsc','amt'].forEach(k=>$(k).value='');$('s2').classList.add('hidden');$('s1').classList.remove('hidden')};
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body>
+</html>
